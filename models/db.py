@@ -79,5 +79,55 @@ use_janrain(auth, filename='private/janrain.key')
 ## >>> for row in rows: print row.id, row.myfield
 #########################################################################
 
+db.define_table("company",
+    Field("name", "string", length=50, notnull=True, default=None),
+    Field("address", "string", length=50, notnull=True, default=None),
+    Field("industry", "string", length=50, notnull=True, default=None),
+    Field("qsrt", "string", length=50, notnull=True, default=None)) #needs to be number format
+    
+    
+db.define_table("job_references",
+      Field("name", "string", length=50, notnull=True, default=None),
+      Field("phone", "string", length=12, notnull=True, default=None),
+      Field("company", "string", length=50, notnull=True, default=None))
+
+db.define_table("work_history",
+      Field("company", "string", length=50, notnull=True, default=None),
+      Field("start_date", "date", notnull=True, default=None),
+      Field("end_date", "date", default=None), #need to default to current date?
+      Field("title", "string", length=50, notnull=True, default=None),
+      Field("duties", "text", notnull=True, default=None))
+
+db.define_table("school_history",
+      Field("school", "string", length=50, notnull=True, default=None),
+      Field("start_date", "date", notnull=True, default=None),
+      Field("end_date", "date", default=None), #need to default to current date?
+      Field("major", "string", length=50, notnull=True),
+      Field("gpa", "string", notnull=True, default=None))
+      
+db.define_table("student",
+      Field("first_name", "string", length=50, notnull=True, default=None),
+      Field("last_name", "string", length=50, notnull=True, default=None),
+      Field("zip_code", "integer", default=None),
+      Field("date_of_birth", "date", default=None),
+      Field("race", "string", length=50, default=None),
+      Field("gender", "string", default=None),
+      Field("school_year", "string", length=50, notnull=True, default=None),
+      Field("major", "string", length=50, notnull=True, default=None),
+      Field("preferred_industry", 'string', length=50, default=None),
+      Field("school_history", 'list:reference school_history', ondelete='CASCADE'),
+      Field("work_history", 'list:reference work_history', ondelete='CASCADE'),
+      Field("skills", "text", notnull=True, default=None),
+      Field("languages", "text", notnull=True, default=None),
+      Field("awards", "text", default=None),
+      Field("hobbies", "text", default=None),
+      Field("job_references", 'list:reference job_references', ondelete='CASCADE'),
+      Field("phone", "string", length=12, notnull=True, default=None),
+      Field("email", "string", length=50, notnull=True, default=None),
+      Field("qsrt", "integer", notnull=True, default=None)) #needs to be number format
+
+
 ## after defining tables, uncomment below to enable auditing
-# auth.enable_record_versioning(db)
+auth.enable_record_versioning(db)
+
+
