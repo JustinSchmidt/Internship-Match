@@ -79,42 +79,55 @@ use_janrain(auth, filename='private/janrain.key')
 ## >>> for row in rows: print row.id, row.myfield
 #########################################################################
 
+#########################################################################
+## NOTES/CHANGES:
+##  - Created initial tables (Tom, 1/21)
+##  - Added auth.signature to most tables. Allows easier referencing when
+##    manipulating the db. (Jeff, 1/22)
+##  - Added some requirements to the student table fields to demonstrate
+##    how to use requires with Web2py (Jeff, 1/22)
+#########################################################################
+
 db.define_table("company",
-    Field("name", "string", length=50, notnull=True, default=None),
-    Field("address", "string", length=50, notnull=True, default=None),
-    Field("industry", "string", length=50, notnull=True, default=None),
-    Field("qsrt", "string", length=50, notnull=True, default=None)) #needs to be number format
+      Field("name", "string", length=50, notnull=True, default=None),
+      Field("address", "string", length=50, notnull=True, default=None),
+      Field("industry", "string", length=50, notnull=True, default=None),
+      Field("qsrt", "string", length=50, notnull=True, default=None), #needs to be number format
+      auth.signature)
     
     
 db.define_table("job_references",
       Field("name", "string", length=50, notnull=True, default=None),
       Field("phone", "string", length=12, notnull=True, default=None),
-      Field("company", "string", length=50, notnull=True, default=None))
+      Field("company", "string", length=50, notnull=True, default=None),
+      auth.signature)
 
 db.define_table("work_history",
       Field("company", "string", length=50, notnull=True, default=None),
       Field("start_date", "date", notnull=True, default=None),
       Field("end_date", "date", default=None), #need to default to current date?
       Field("title", "string", length=50, notnull=True, default=None),
-      Field("duties", "text", notnull=True, default=None))
+      Field("duties", "text", notnull=True, default=None),
+      auth.signature)
 
 db.define_table("school_history",
       Field("school", "string", length=50, notnull=True, default=None),
       Field("start_date", "date", notnull=True, default=None),
       Field("end_date", "date", default=None), #need to default to current date?
       Field("major", "string", length=50, notnull=True),
-      Field("gpa", "string", notnull=True, default=None))
+      Field("gpa", "string", notnull=True, default=None),
+      auth.signature)
       
 db.define_table("student",
-      Field("first_name", "string", length=50, notnull=True, default=None),
-      Field("last_name", "string", length=50, notnull=True, default=None),
-      Field("zip_code", "integer", default=None),
-      Field("date_of_birth", "date", default=None),
-      Field("race", "string", length=50, default=None),
-      Field("gender", "string", default=None),
-      Field("school_year", "string", length=50, notnull=True, default=None),
-      Field("major", "string", length=50, notnull=True, default=None),
-      Field("preferred_industry", 'string', length=50, default=None),
+      Field("first_name", "string", length=50, requires=IS_NOT_EMPTY(), notnull=True, default=None),
+      Field("last_name", "string", length=50, requires=IS_NOT_EMPTY(), notnull=True, default=None),
+      Field("zip_code", "integer", requires=IS_NOT_EMPTY(), requires=IS_MATCH('^\d{5}(-\d{4})?$'), default=None),
+      Field("date_of_birth", "date", requires=IS_NOT_EMPTY(), default=None),
+      Field("race", "string", length=50, default=None), #could use IS_IN_SET
+      Field("gender", requires=IS_IN_SET(['Male', 'Female', 'Other']), default=None),
+      Field("school_year", "string", length=50, requires=IS_NOT_EMPTY(), notnull=True, default=None),
+      Field("major", "string", length=50, requires=IS_NOT_EMPTY(), notnull=True, default=None), #could use IS_IN_SET
+      Field("preferred_industry", 'string', length=50, default=None), #could use IS_IN_SET
       Field("school_history", 'list:reference school_history', ondelete='CASCADE'),
       Field("work_history", 'list:reference work_history', ondelete='CASCADE'),
       Field("skills", "text", notnull=True, default=None),
@@ -122,9 +135,10 @@ db.define_table("student",
       Field("awards", "text", default=None),
       Field("hobbies", "text", default=None),
       Field("job_references", 'list:reference job_references', ondelete='CASCADE'),
-      Field("phone", "string", length=12, notnull=True, default=None),
-      Field("email", "string", length=50, notnull=True, default=None),
-      Field("qsrt", "integer", notnull=True, default=None)) #needs to be number format
+      Field("phone", "string", length=12, requires=IS_MATCH('^1?((-)\d{3}-?|\(\d{3}\))\d{3}-?\d{4}$'), notnull=True, default=None), #Should use a better regex here
+      Field("email", "string", length=50, requires=IS_EMAIL(error_message='Please enter a valid email.'), notnull=True, default=None),
+      Field("qsrt", "integer", notnull=True, default=None), #needs to be number format
+      auth.signature)
 
 
 ## after defining tables, uncomment below to enable auditing
