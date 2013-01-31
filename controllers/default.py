@@ -78,3 +78,17 @@ def data():
       LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
     """
     return dict(form=crud())
+    
+def companyhome():
+    """
+    http://..../[app]/default/companyhome
+    """
+    response.flash = T("Welcome to the company home page")
+    return dict(message=T('Represent your business in a whole new way!'))
+    
+def studenthome():
+    """
+    http://..../[app]/default/studenthome
+    """
+    response.flash = T("Welcome to the Student home page")
+    return dict(message=T('Get a great internship today!'))
